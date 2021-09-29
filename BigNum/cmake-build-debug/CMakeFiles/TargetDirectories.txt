@@ -1,0 +1,3 @@
+D:/Git Pet/BigNum/BigNum/cmake-build-debug/CMakeFiles/BigNum.dir
+D:/Git Pet/BigNum/BigNum/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/Git Pet/BigNum/BigNum/cmake-build-debug/CMakeFiles/rebuild_cache.dir
