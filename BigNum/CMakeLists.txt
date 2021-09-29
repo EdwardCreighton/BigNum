@@ -3,4 +3,7 @@ project(BigNum)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(BigNum main.cpp)
+add_executable(BigNum
+        ./Headers/BigNum_Int.h
+        ./Source/BigNum_Int.cpp
+        main.cpp)
