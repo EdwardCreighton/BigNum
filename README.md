@@ -1,2 +1,2 @@
 # BigNum
-Custom realization of Big Numbers class in C++
+Custom implementation of Big Numbers class in C++
