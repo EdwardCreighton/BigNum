@@ -1,2 +1,3 @@
+# Ignore compile folders
 /BigNum/.idea/
 /BigNum/cmake-build-debug/
