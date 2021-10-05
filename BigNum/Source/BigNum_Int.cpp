@@ -317,17 +317,50 @@ const BigNum_Int operator+(BigNum_Int &leftNum, BigNum_Int &rightNum)
         {
             maxSize = leftNum.size;
             minSize = rightNum.size;
+            rightNumberBigger = false;
+            resultBigNum.SetNewSize(maxSize);
         }
         else if (leftNum.size < rightNum.size)
         {
             maxSize = rightNum.size;
             minSize = leftNum.size;
+            rightNumberBigger = true;
+            resultBigNum.SetNewSize(maxSize);
         }
         else
         {
             maxSize = leftNum.size;
             minSize = leftNum.size;
+            rightNumberBigger = true;
+            resultBigNum.SetNewSize(maxSize + 1);
         }
+    }
+    else if ((!leftNum.isNegative && rightNum.isNegative) || (leftNum.isNegative && !rightNum.isNegative))
+    {
+
+    }
+    else if (leftNum.isNegative && rightNum.isNegative)
+    {
+        if (leftNum.size > rightNum.size)
+        {
+            maxSize = leftNum.size;
+            minSize = rightNum.size;
+            rightNumberBigger = false;
+        }
+        else if (leftNum.size < rightNum.size)
+        {
+            maxSize = rightNum.size;
+            minSize = leftNum.size;
+            rightNumberBigger = true;
+        }
+        else
+        {
+            maxSize = leftNum.size;
+            minSize = leftNum.size;
+            rightNumberBigger = true;
+        }
+
+        resultBigNum.SetNewSize(maxSize + 1);
     }
 }
 
