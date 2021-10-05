@@ -4,11 +4,13 @@
 class Byte
 {
 private:
-    char byte;
-    const static int byteSize = 8;
+    char singleByte;
 
 public:
     Byte();
+    void SetBitCondition(int bitPosition, bool newCondition);
+    void InverseByte();
+    bool GetBitCondition(int bitPosition);
 };
 
 #endif //BIGNUM_BYTE_H

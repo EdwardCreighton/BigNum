@@ -1,22 +1,33 @@
 #ifndef BIGNUM_BIGNUM_INT_H
 #define BIGNUM_BIGNUM_INT_H
 
-#include "../Headers/Byte.h"
+#include <string>
+#include "Byte.h"
+
+using namespace std;
 
 class BigNum_Int
 {
 private:
-    Byte* number;
+    Byte* p_number;
     int size;
     bool isNegative;
+
+    bool CheckIfEven(char lastDigit);
+    string DivideByTwo(string numerator);
+    int TransformCharToInt(char character);
+    char TransformIntToChar(int integer);
 
 public:
     BigNum_Int();
     BigNum_Int(int size);
-
-    void SetNumber(char* newNumber);
-
+    BigNum_Int(const BigNum_Int &origNum);
+    void SetNumber(string number);
     ~BigNum_Int();
+
+    BigNum_Int &operator=(const BigNum_Int& rightNum);
+    friend const BigNum_Int operator+(BigNum_Int &leftNum, BigNum_Int &rightNum);
+    friend const BigNum_Int operator-(BigNum_Int &leftNum, BigNum_Int &rightNum);
 };
 
 #endif //BIGNUM_BIGNUM_INT_H
