@@ -17,6 +17,7 @@ private:
     string DivideByTwo(string numerator);
     int TransformCharToInt(char character);
     char TransformIntToChar(int integer);
+    void SetNewSize(int newSize);
 
 public:
     BigNum_Int();

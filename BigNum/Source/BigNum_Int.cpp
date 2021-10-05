@@ -264,6 +264,20 @@ char BigNum_Int::TransformIntToChar(int integer)
     }
 }
 
+void BigNum_Int::SetNewSize(int newSize)
+{
+    Byte* new_p_number = new Byte[newSize];
+
+    for (int i = 0; i < this->size; ++i) {
+        new_p_number[i] = this->p_number[i];
+    }
+
+    delete[] this->p_number;
+
+    this->p_number = new_p_number;
+    this->size = newSize;
+}
+
 BigNum_Int &BigNum_Int::operator=(const BigNum_Int &rightNum)
 {
     if (this == &rightNum)
@@ -292,10 +306,33 @@ BigNum_Int &BigNum_Int::operator=(const BigNum_Int &rightNum)
 
 const BigNum_Int operator+(BigNum_Int &leftNum, BigNum_Int &rightNum)
 {
-    return BigNum_Int();
+    bool rightNumberBigger;
+    int maxSize;
+    int minSize;
+    BigNum_Int resultBigNum;
+
+    if (!leftNum.isNegative && !rightNum.isNegative)
+    {
+        if (leftNum.size > rightNum.size)
+        {
+            maxSize = leftNum.size;
+            minSize = rightNum.size;
+        }
+        else if (leftNum.size < rightNum.size)
+        {
+            maxSize = rightNum.size;
+            minSize = leftNum.size;
+        }
+        else
+        {
+            maxSize = leftNum.size;
+            minSize = leftNum.size;
+        }
+    }
 }
 
 const BigNum_Int operator-(BigNum_Int &leftNum, BigNum_Int &rightNum)
 {
     return BigNum_Int();
 }
+
