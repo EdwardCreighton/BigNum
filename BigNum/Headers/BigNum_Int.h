@@ -6,6 +6,12 @@
 
 using namespace std;
 
+enum OutTypes
+{
+    BINARY,
+    DECIMAL
+};
+
 class BigNum_Int
 {
 private:
@@ -24,6 +30,7 @@ public:
     BigNum_Int(int size);
     BigNum_Int(const BigNum_Int &origNum);
     void SetNumber(string number);
+    string GetNumber(OutTypes type);
     ~BigNum_Int();
 
     BigNum_Int &operator=(const BigNum_Int& rightNum);

@@ -80,6 +80,8 @@ void BigNum_Int::SetNumber(string number)
         }
     } while (number != "1");
 
+    p_number[byteCount].SetBitCondition(bitCount, true);
+
     if (isNegative)
     {
         byteCount = 0;
@@ -114,6 +116,31 @@ void BigNum_Int::SetNumber(string number)
             if (!digitTransfer) break;
         }
     }
+}
+
+string BigNum_Int::GetNumber(OutTypes type)
+{
+    string outNumber;
+
+    if (type == OutTypes(BINARY))
+    {
+        for (int byteCount = size -1; byteCount >= 0; --byteCount)
+        {
+            for (int bitCount = 7; bitCount >= 0; --bitCount)
+            {
+                if (p_number[byteCount].GetBitCondition(bitCount))
+                {
+                    outNumber += '1';
+                }
+                else
+                {
+                    outNumber += '0';
+                }
+            }
+        }
+    }
+
+    return outNumber;
 }
 
 BigNum_Int::~BigNum_Int()
@@ -167,7 +194,10 @@ string BigNum_Int::DivideByTwo(string numerator)
             addHalf = true;
         }
 
-        dividedNumber[chCount] = TransformIntToChar(dividedInteger);
+        if (!(chCount == 0 && dividedInteger == 0))
+        {
+            dividedNumber += TransformIntToChar(dividedInteger);
+        }
     }
 
     return dividedNumber;
@@ -332,6 +362,10 @@ const BigNum_Int operator+(BigNum_Int &leftNum, BigNum_Int &rightNum)
     bool rightNumberBigger;
     int maxSize;
     int minSize;
+
+    int byteCount;
+    int bitCount;
+
     BigNum_Int resultBigNum;
 
     if (!leftNum.isNegative && !rightNum.isNegative)
@@ -358,9 +392,221 @@ const BigNum_Int operator+(BigNum_Int &leftNum, BigNum_Int &rightNum)
             resultBigNum.SetNewSize(maxSize + 1);
         }
     }
-    else if ((!leftNum.isNegative && rightNum.isNegative) || (leftNum.isNegative && !rightNum.isNegative))
+    else if (!leftNum.isNegative && rightNum.isNegative)
     {
+        BigNum_Int temp;
+        temp = rightNum;
 
+        for (int byteCount = 0; byteCount < temp.size; ++byteCount)
+        {
+            temp.p_number[byteCount].InverseByte();
+        }
+
+        bool invertedDigitTransfer = true;
+
+        for (int byteCount = 0; byteCount < temp.size; ++byteCount)
+        {
+            for (int bitCount = 0; bitCount < 8; ++bitCount)
+            {
+                if (invertedDigitTransfer)
+                {
+                    if (!temp.p_number[byteCount].GetBitCondition(bitCount))
+                    {
+                        temp.p_number[byteCount].SetBitCondition(bitCount, true);
+                    }
+                    else
+                    {
+                        temp.p_number[byteCount].SetBitCondition(bitCount, false);
+                        invertedDigitTransfer = false;
+                    }
+                }
+            }
+
+            if (!invertedDigitTransfer) break;
+        }
+
+        if (leftNum.size > rightNum.size)
+        {
+            maxSize = leftNum.size;
+            minSize = rightNum.size;
+        }
+        else if (leftNum.size < rightNum.size)
+        {
+            maxSize = rightNum.size;
+            minSize = leftNum.size;
+        }
+
+        bool stopIterating = false;
+
+        for (byteCount = maxSize - 1; byteCount >= minSize; --byteCount)
+        {
+            for (bitCount = 7; bitCount >= 0; --bitCount)
+            {
+                if (!stopIterating)
+                {
+                    if (byteCount <= temp.size && temp.p_number[byteCount].GetBitCondition(bitCount))
+                    {
+                        rightNumberBigger = true;
+                        stopIterating = true;
+                    }
+                    else if (byteCount <= leftNum.size && leftNum.p_number[byteCount].GetBitCondition(bitCount))
+                    {
+                        rightNumberBigger = false;
+                        stopIterating = true;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (stopIterating) break;
+        }
+
+        for (byteCount = minSize - 1; byteCount >= 0; --byteCount)
+        {
+            for (bitCount = 7; bitCount >= 0; --bitCount)
+            {
+                if (!stopIterating)
+                {
+                    if (temp.p_number[byteCount].GetBitCondition(bitCount) && !leftNum.p_number[byteCount].GetBitCondition(bitCount))
+                    {
+                        rightNumberBigger = true;
+                        stopIterating = true;
+                    }
+                    else if (!temp.p_number[byteCount].GetBitCondition(bitCount) && leftNum.p_number[byteCount].GetBitCondition(bitCount))
+                    {
+                        rightNumberBigger = false;
+                        stopIterating = true;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (stopIterating) break;
+        }
+
+        if (!rightNumberBigger)
+        {
+            resultBigNum.SetNewSize(leftNum.size);
+        }
+        else
+        {
+            resultBigNum.SetNewSize(rightNum.size);
+            resultBigNum.isNegative = true;
+        }
+    }
+    else if (leftNum.isNegative && !rightNum.isNegative)
+    {
+        BigNum_Int temp;
+        temp = leftNum;
+
+        for (int byteCount = 0; byteCount < temp.size; ++byteCount)
+        {
+            temp.p_number[byteCount].InverseByte();
+        }
+
+        bool invertedDigitTransfer = true;
+
+        for (int byteCount = 0; byteCount < temp.size; ++byteCount)
+        {
+            for (int bitCount = 0; bitCount < 8; ++bitCount)
+            {
+                if (invertedDigitTransfer)
+                {
+                    if (!temp.p_number[byteCount].GetBitCondition(bitCount))
+                    {
+                        temp.p_number[byteCount].SetBitCondition(bitCount, true);
+                    }
+                    else
+                    {
+                        temp.p_number[byteCount].SetBitCondition(bitCount, false);
+                        invertedDigitTransfer = false;
+                    }
+                }
+            }
+
+            if (!invertedDigitTransfer) break;
+        }
+
+        if (leftNum.size > rightNum.size)
+        {
+            maxSize = leftNum.size;
+            minSize = rightNum.size;
+        }
+        else if (leftNum.size < rightNum.size)
+        {
+            maxSize = rightNum.size;
+            minSize = leftNum.size;
+        }
+
+        bool stopIterating = false;
+
+        for (byteCount = maxSize - 1; byteCount >= minSize; --byteCount)
+        {
+            for (bitCount = 7; bitCount >= 0; --bitCount)
+            {
+                if (!stopIterating)
+                {
+                    if (byteCount <= temp.size && temp.p_number[byteCount].GetBitCondition(bitCount))
+                    {
+                        rightNumberBigger = false;
+                        stopIterating = true;
+                    }
+                    else if (byteCount <= rightNum.size && rightNum.p_number[byteCount].GetBitCondition(bitCount))
+                    {
+                        rightNumberBigger = true;
+                        stopIterating = true;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (stopIterating) break;
+        }
+
+        for (byteCount = minSize - 1; byteCount >= 0; --byteCount)
+        {
+            for (bitCount = 7; bitCount >= 0; --bitCount)
+            {
+                if (!stopIterating)
+                {
+                    if (temp.p_number[byteCount].GetBitCondition(bitCount) && !rightNum.p_number[byteCount].GetBitCondition(bitCount))
+                    {
+                        rightNumberBigger = false;
+                        stopIterating = true;
+                    }
+                    else if (!temp.p_number[byteCount].GetBitCondition(bitCount) && rightNum.p_number[byteCount].GetBitCondition(bitCount))
+                    {
+                        rightNumberBigger = true;
+                        stopIterating = true;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (stopIterating) break;
+        }
+
+        if (rightNumberBigger)
+        {
+            resultBigNum.SetNewSize(rightNum.size);
+        }
+        else
+        {
+            resultBigNum.SetNewSize(leftNum.size);
+            resultBigNum.isNegative = true;
+        }
     }
     else if (leftNum.isNegative && rightNum.isNegative)
     {
@@ -385,10 +631,127 @@ const BigNum_Int operator+(BigNum_Int &leftNum, BigNum_Int &rightNum)
 
         resultBigNum.SetNewSize(maxSize + 1);
     }
+
+    bool digitTransfer;
+
+    for (byteCount = 0; byteCount < minSize; ++byteCount)
+    {
+        for (bitCount = 0; bitCount < 8; ++bitCount)
+        {
+            if (leftNum.p_number[byteCount].GetBitCondition(bitCount) && rightNum.p_number[byteCount].GetBitCondition(bitCount))
+            {
+                if (digitTransfer)
+                {
+                    resultBigNum.p_number[byteCount].SetBitCondition(bitCount, true);
+                }
+                else
+                {
+                    resultBigNum.p_number[byteCount].SetBitCondition(bitCount, false);
+                    digitTransfer = true;
+                }
+            }
+            else if (leftNum.p_number[byteCount].GetBitCondition(bitCount) && !rightNum.p_number[byteCount].GetBitCondition(bitCount))
+            {
+                if (digitTransfer)
+                {
+                    resultBigNum.p_number[byteCount].SetBitCondition(bitCount, false);
+                }
+                else
+                {
+                    resultBigNum.p_number[byteCount].SetBitCondition(bitCount, true);
+                }
+            }
+            else if (!leftNum.p_number[byteCount].GetBitCondition(bitCount) && rightNum.p_number[byteCount].GetBitCondition(bitCount))
+            {
+                if (digitTransfer)
+                {
+                    resultBigNum.p_number[byteCount].SetBitCondition(bitCount, false);
+                }
+                else
+                {
+                    resultBigNum.p_number[byteCount].SetBitCondition(bitCount, true);
+                }
+            }
+            else if (!leftNum.p_number[byteCount].GetBitCondition(bitCount) && !rightNum.p_number[byteCount].GetBitCondition(bitCount))
+            {
+                if (digitTransfer)
+                {
+                    resultBigNum.p_number[byteCount].SetBitCondition(bitCount, true);
+                    digitTransfer = false;
+                }
+                else
+                {
+                    resultBigNum.p_number[byteCount].SetBitCondition(bitCount, false);
+                }
+            }
+        }
+    }
+
+    for (byteCount = minSize; byteCount < maxSize; ++byteCount)
+    {
+        for (bitCount = 0; bitCount < 8; ++bitCount)
+        {
+            if (rightNumberBigger)
+            {
+                if (rightNum.p_number[byteCount].GetBitCondition(bitCount))
+                {
+                    if (digitTransfer)
+                    {
+                        resultBigNum.p_number[byteCount].SetBitCondition(bitCount, false);
+                        digitTransfer = false;
+                    }
+                    else
+                    {
+                        resultBigNum.p_number[byteCount].SetBitCondition(bitCount, true);
+                    }
+                }
+                else
+                {
+                    if (digitTransfer)
+                    {
+                        resultBigNum.p_number[byteCount].SetBitCondition(bitCount, true);
+                        digitTransfer = false;
+                    }
+                    else
+                    {
+                        resultBigNum.p_number[byteCount].SetBitCondition(bitCount, false);
+                    }
+                }
+            }
+            else
+            {
+                if (leftNum.p_number[byteCount].GetBitCondition(bitCount))
+                {
+                    if (digitTransfer)
+                    {
+                        resultBigNum.p_number[byteCount].SetBitCondition(bitCount, false);
+                        digitTransfer = false;
+                    }
+                    else
+                    {
+                        resultBigNum.p_number[byteCount].SetBitCondition(bitCount, true);
+                    }
+                }
+                else
+                {
+                    if (digitTransfer)
+                    {
+                        resultBigNum.p_number[byteCount].SetBitCondition(bitCount, true);
+                        digitTransfer = false;
+                    }
+                    else
+                    {
+                        resultBigNum.p_number[byteCount].SetBitCondition(bitCount, false);
+                    }
+                }
+            }
+        }
+    }
+
+    return resultBigNum;
 }
 
 const BigNum_Int operator-(BigNum_Int &leftNum, BigNum_Int &rightNum)
 {
     return BigNum_Int();
 }
-
