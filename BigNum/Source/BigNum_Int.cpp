@@ -89,7 +89,30 @@ void BigNum_Int::SetNumber(string number)
             p_number[byteCount].InverseByte();
         }
 
-        // TODO: Add addition process
+        bool digitTransfer = true;
+
+        for (byteCount = 0; byteCount < size; ++byteCount)
+        {
+            for (bitCount = 0; bitCount < 8; ++ bitCount)
+            {
+                if (digitTransfer)
+                {
+                    if (p_number[byteCount].GetBitCondition(bitCount))
+                    {
+                        p_number[byteCount].SetBitCondition(bitCount, false);
+                    }
+                    else
+                    {
+                        p_number[byteCount].SetBitCondition(bitCount, true);
+                        digitTransfer = false;
+                    }
+                }
+
+                if (!digitTransfer) break;
+            }
+
+            if (!digitTransfer) break;
+        }
     }
 }
 
