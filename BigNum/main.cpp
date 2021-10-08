@@ -6,14 +6,19 @@ using namespace std;
 int main()
 {
     BigNum_Int number1;
-    number1.SetNumber("16");
+    string str1;
+    cout << "Enter first number: ";
+    cin >> str1;
+    number1.SetNumber(str1);
 
     BigNum_Int number2(1);
-    number2.SetNumber("10");
+    string str2;
+    cout << "\nEnter second number: ";
+    cin >> str2;
+    number2.SetNumber(str2);
 
-    BigNum_Int number3;
 
-    number3 = number2 - number1;
+    BigNum_Int number3 = number1 + number2;
 
-    cout << number3.GetNumber(OutTypes(BINARY)) << endl;
+    cout << "\n" << number3.GetNumber(OutTypes(BINARY)) << endl;
 }
