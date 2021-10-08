@@ -777,5 +777,46 @@ const BigNum_Int operator+(BigNum_Int &leftNum, BigNum_Int &rightNum)
 
 const BigNum_Int operator-(BigNum_Int &leftNum, BigNum_Int &rightNum)
 {
-    return BigNum_Int();
+    BigNum_Int tempBigNum(rightNum.size);
+    tempBigNum = rightNum;
+
+    int byteCount;
+
+    for (byteCount = 0; byteCount < tempBigNum.size; ++byteCount)
+    {
+        tempBigNum.p_number[byteCount].InverseByte();
+    }
+
+    bool digitTransfer = true;
+
+    for (byteCount = 0; byteCount < tempBigNum.size; ++byteCount)
+    {
+        for (int bitCount = 0; bitCount < 8; ++bitCount)
+        {
+            if (digitTransfer)
+            {
+                if (tempBigNum.p_number[byteCount].GetBitCondition(bitCount))
+                {
+                    tempBigNum.p_number[byteCount].SetBitCondition(bitCount, false);
+                }
+                else
+                {
+                    tempBigNum.p_number[byteCount].SetBitCondition(bitCount, true);
+                    digitTransfer = false;
+                }
+            }
+
+            if (!digitTransfer) break;
+
+        }
+
+        if (!digitTransfer) break;
+    }
+
+    tempBigNum.isNegative = !tempBigNum.isNegative;
+
+    BigNum_Int resultBigNum;
+    resultBigNum = leftNum + tempBigNum;
+
+    return resultBigNum;
 }
