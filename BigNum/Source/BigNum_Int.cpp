@@ -62,6 +62,15 @@ void BigNum_Int::SetNumber(string number)
     if (number[0] == '-')
     {
         isNegative = true;
+
+        string temp;
+
+        for (int i = 1; i < number.length(); ++i)
+        {
+            temp += number[i];
+        }
+
+        number = temp;
     }
 
     do
@@ -209,7 +218,7 @@ int BigNum_Int::TransformCharToInt(char character)
     {
         case '0':
         {
-            return 1;
+            return 0;
             break;
         }
         case '1':
@@ -397,32 +406,34 @@ const BigNum_Int operator+(BigNum_Int &leftNum, BigNum_Int &rightNum)
         BigNum_Int temp;
         temp = rightNum;
 
-        for (int byteCount = 0; byteCount < temp.size; ++byteCount)
+        for (byteCount = 0; byteCount < temp.size; ++byteCount)
         {
             temp.p_number[byteCount].InverseByte();
         }
 
-        bool invertedDigitTransfer = true;
+        bool digitTransfer = true;
 
-        for (int byteCount = 0; byteCount < temp.size; ++byteCount)
+        for (byteCount = 0; byteCount < temp.size; ++byteCount)
         {
-            for (int bitCount = 0; bitCount < 8; ++bitCount)
+            for (bitCount = 0; bitCount < 8; ++bitCount)
             {
-                if (invertedDigitTransfer)
+                if (digitTransfer)
                 {
-                    if (!temp.p_number[byteCount].GetBitCondition(bitCount))
+                    if (temp.p_number[byteCount].GetBitCondition(bitCount))
                     {
-                        temp.p_number[byteCount].SetBitCondition(bitCount, true);
+                        temp.p_number[byteCount].SetBitCondition(bitCount, false);
                     }
                     else
                     {
-                        temp.p_number[byteCount].SetBitCondition(bitCount, false);
-                        invertedDigitTransfer = false;
+                        temp.p_number[byteCount].SetBitCondition(bitCount, true);
+                        digitTransfer = false;
                     }
                 }
+
+                if (!digitTransfer) break;
             }
 
-            if (!invertedDigitTransfer) break;
+            if (!digitTransfer) break;
         }
 
         if (leftNum.size > rightNum.size)
@@ -434,6 +445,11 @@ const BigNum_Int operator+(BigNum_Int &leftNum, BigNum_Int &rightNum)
         {
             maxSize = rightNum.size;
             minSize = leftNum.size;
+        }
+        else
+        {
+            maxSize = rightNum.size;
+            minSize = rightNum.size;
         }
 
         bool stopIterating = false;
@@ -505,32 +521,35 @@ const BigNum_Int operator+(BigNum_Int &leftNum, BigNum_Int &rightNum)
         BigNum_Int temp;
         temp = leftNum;
 
-        for (int byteCount = 0; byteCount < temp.size; ++byteCount)
+        for (byteCount = 0; byteCount < temp.size; ++byteCount)
         {
             temp.p_number[byteCount].InverseByte();
         }
 
-        bool invertedDigitTransfer = true;
+        bool digitTransfer = true;
 
-        for (int byteCount = 0; byteCount < temp.size; ++byteCount)
+        for (byteCount = 0; byteCount < temp.size; ++byteCount)
         {
-            for (int bitCount = 0; bitCount < 8; ++bitCount)
+            for (bitCount = 0; bitCount < 8; ++bitCount)
             {
-                if (invertedDigitTransfer)
+                if (digitTransfer)
                 {
-                    if (!temp.p_number[byteCount].GetBitCondition(bitCount))
+                    if (temp.p_number[byteCount].GetBitCondition(bitCount))
                     {
-                        temp.p_number[byteCount].SetBitCondition(bitCount, true);
+                        temp.p_number[byteCount].SetBitCondition(bitCount, false);
                     }
                     else
                     {
-                        temp.p_number[byteCount].SetBitCondition(bitCount, false);
-                        invertedDigitTransfer = false;
+                        temp.p_number[byteCount].SetBitCondition(bitCount, true);
+                        digitTransfer = false;
                     }
                 }
+
+                if (!digitTransfer) break;
+
             }
 
-            if (!invertedDigitTransfer) break;
+            if (!digitTransfer) break;
         }
 
         if (leftNum.size > rightNum.size)
@@ -542,6 +561,11 @@ const BigNum_Int operator+(BigNum_Int &leftNum, BigNum_Int &rightNum)
         {
             maxSize = rightNum.size;
             minSize = leftNum.size;
+        }
+        else
+        {
+            maxSize = rightNum.size;
+            minSize = rightNum.size;
         }
 
         bool stopIterating = false;
@@ -632,7 +656,7 @@ const BigNum_Int operator+(BigNum_Int &leftNum, BigNum_Int &rightNum)
         resultBigNum.SetNewSize(maxSize + 1);
     }
 
-    bool digitTransfer;
+    bool digitTransfer = false;
 
     for (byteCount = 0; byteCount < minSize; ++byteCount)
     {
