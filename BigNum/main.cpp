@@ -5,7 +5,7 @@ using namespace std;
 
 int main()
 {
-    BigNum_Int number1(1);
+    BigNum_Int number1;
     number1.SetNumber("16");
 
     BigNum_Int number2(1);
@@ -13,15 +13,7 @@ int main()
 
     BigNum_Int number3;
 
-    number3 = number1 - number2;
+    number3 = number2 - number1;
 
     cout << number3.GetNumber(OutTypes(BINARY)) << endl;
-
-    /*string str;
-    char ch = '5';
-
-    cout << "First call " + str << endl;
-
-    str += ch;
-    cout << "Second call " + str << endl;*/
 }

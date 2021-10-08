@@ -57,8 +57,6 @@ void BigNum_Int::SetNumber(string number)
         }
     }
 
-    // TODO: Check if allocated memory is enough for new number
-
     if (number[0] == '-')
     {
         isNegative = true;
@@ -78,6 +76,23 @@ void BigNum_Int::SetNumber(string number)
         isEven = CheckIfEven(number[number.size() - 1]);
 
         number = DivideByTwo(number);
+
+        if (byteCount >= size)
+        {
+            Byte* temp = new Byte[size + 1];
+
+            for (byteCount = 0; byteCount < size; ++byteCount)
+            {
+                temp[byteCount] = p_number[byteCount];
+            }
+
+            delete[] p_number;
+
+            p_number = temp;
+
+            ++size;
+        }
+
         p_number[byteCount].SetBitCondition(bitCount, !isEven);
 
         ++bitCount;
@@ -89,13 +104,27 @@ void BigNum_Int::SetNumber(string number)
         }
     } while (number != "1");
 
+    if (byteCount >= size)
+    {
+        Byte* temp = new Byte[size + 1];
+
+        for (byteCount = 0; byteCount < size; ++byteCount)
+        {
+            temp[byteCount] = p_number[byteCount];
+        }
+
+        delete[] p_number;
+
+        p_number = temp;
+
+        ++size;
+    }
+
     p_number[byteCount].SetBitCondition(bitCount, true);
 
     if (isNegative)
     {
-        byteCount = 0;
-
-        for (byteCount; byteCount < size; ++byteCount)
+        for (byteCount = 0; byteCount < size; ++byteCount)
         {
             p_number[byteCount].InverseByte();
         }
