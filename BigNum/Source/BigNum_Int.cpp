@@ -71,7 +71,7 @@ void BigNum_Int::SetNumber(string number)
         number = temp;
     }
 
-    do
+    while (number != "1")
     {
         isEven = CheckIfEven(number[number.size() - 1]);
 
@@ -102,7 +102,7 @@ void BigNum_Int::SetNumber(string number)
             bitCount = 0;
             ++byteCount;
         }
-    } while (number != "1");
+    }
 
     if (byteCount >= size)
     {
@@ -160,11 +160,14 @@ string BigNum_Int::GetNumber(OutTypes type)
 {
     string outNumber;
 
+    int byteCount;
+    int bitCount;
+
     if (type == OutTypes(BINARY))
     {
-        for (int byteCount = size -1; byteCount >= 0; --byteCount)
+        for (byteCount = size - 1; byteCount >= 0; --byteCount)
         {
-            for (int bitCount = 7; bitCount >= 0; --bitCount)
+            for (bitCount = 7; bitCount >= 0; --bitCount)
             {
                 if (p_number[byteCount].GetBitCondition(bitCount))
                 {
@@ -176,6 +179,72 @@ string BigNum_Int::GetNumber(OutTypes type)
                 }
             }
         }
+    }
+    else if (type == OutTypes(DECIMAL))
+    {
+        if (isNegative)
+        {
+            for (byteCount = 0; byteCount < size; ++byteCount)
+            {
+                p_number[byteCount].InverseByte();
+            }
+
+            bool digitTransfer = true;
+
+            for (byteCount = 0; byteCount < size; ++byteCount)
+            {
+                for (bitCount = 0; bitCount < 8; ++ bitCount)
+                {
+                    if (digitTransfer)
+                    {
+                        if (p_number[byteCount].GetBitCondition(bitCount))
+                        {
+                            p_number[byteCount].SetBitCondition(bitCount, false);
+                        }
+                        else
+                        {
+                            p_number[byteCount].SetBitCondition(bitCount, true);
+                            digitTransfer = false;
+                        }
+                    }
+
+                    if (!digitTransfer) break;
+                }
+
+                if (!digitTransfer) break;
+            }
+        }
+
+        int digitCount = 0;
+        outNumber = "0";
+
+        for (byteCount = 0; byteCount < size; ++byteCount)
+        {
+            for (bitCount = 0; bitCount < 8; ++ bitCount)
+            {
+                if (p_number[byteCount].GetBitCondition(bitCount))
+                {
+                    string temp = MultiplyByTwo(digitCount);
+                    outNumber = DecimalSum(outNumber, temp);
+                }
+
+                ++digitCount;
+            }
+        }
+
+        string temp;
+
+        if (isNegative)
+        {
+            temp += '-';
+        }
+
+        for (int i = outNumber.size() - 1; i >= 0; --i)
+        {
+            temp += outNumber[i];
+        }
+
+        outNumber = temp;
     }
 
     return outNumber;
@@ -369,6 +438,118 @@ void BigNum_Int::SetNewSize(int newSize)
     this->size = newSize;
 }
 
+string BigNum_Int::MultiplyByTwo(int multiplicationCount)
+{
+    if (multiplicationCount == 0)
+    {
+        return "1";
+    }
+
+    string outString = "2";
+    bool digitTransfer = false;
+
+    for (int counter = 1; counter < multiplicationCount; ++counter)
+    {
+        for (int j = 0; j < outString.size(); ++j)
+        {
+            int currentDigit = TransformCharToInt(outString[j]);
+
+            currentDigit *= 2;
+
+            if (digitTransfer)
+            {
+                ++currentDigit;
+            }
+
+            digitTransfer = bool(currentDigit / 10);
+
+            char newDigit = TransformIntToChar(currentDigit % 10);
+
+            outString[j] = newDigit;
+        }
+
+        if (digitTransfer)
+        {
+            outString += '1';
+            digitTransfer = false;
+        }
+    }
+
+    return outString;
+}
+
+string &BigNum_Int::DecimalSum(string &left, string &right)
+{
+    string *minValue;
+    string *maxValue;
+
+    int minSize;
+    int maxSize;
+
+    bool digitTransfer = false;
+
+    if (left.size() > right.size())
+    {
+        minValue = &right;
+        maxValue = &left;
+
+        minSize = right.size();
+        maxSize = left.size();
+    }
+    else
+    {
+        minValue = &left;
+        maxValue = &right;
+
+        minSize = left.size();
+        maxSize = right.size();
+    }
+
+    int digitCount;
+
+    for (digitCount = 0; digitCount < minSize; ++digitCount)
+    {
+        int maxValueDigit = TransformCharToInt((*maxValue)[digitCount]);
+        int minValueDigit = TransformCharToInt((*minValue)[digitCount]);
+
+        maxValueDigit += minValueDigit;
+
+        if (digitTransfer)
+        {
+            ++maxValueDigit;
+        }
+
+        digitTransfer = bool(maxValueDigit / 10);
+
+        (*maxValue)[digitCount] = TransformIntToChar(maxValueDigit % 10);
+    }
+    for (digitCount = minSize; digitCount < maxSize; ++digitCount)
+    {
+        if (digitTransfer)
+        {
+            int maxValueDigit = TransformCharToInt((*maxValue)[digitCount]);
+
+            ++maxValueDigit;
+
+            digitTransfer = bool(maxValueDigit / 10);
+
+            (*maxValue)[digitCount] = TransformIntToChar(maxValueDigit % 10);
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if (digitTransfer)
+    {
+        *maxValue += '1';
+        digitTransfer = false;
+    }
+
+    return *maxValue;
+}
+
 BigNum_Int &BigNum_Int::operator=(const BigNum_Int &rightNum)
 {
     if (this == &rightNum)
@@ -391,6 +572,8 @@ BigNum_Int &BigNum_Int::operator=(const BigNum_Int &rightNum)
     {
         this->p_number[i] = rightNum.p_number[i];
     }
+
+    this->isNegative = rightNum.isNegative;
 
     return *this;
 }

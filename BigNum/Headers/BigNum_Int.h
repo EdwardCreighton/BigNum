@@ -24,6 +24,8 @@ private:
     int TransformCharToInt(char character);
     char TransformIntToChar(int integer);
     void SetNewSize(int newSize);
+    string MultiplyByTwo(int multiplicationCount);
+    string &DecimalSum(string &left, string &right);
 
 public:
     BigNum_Int();
