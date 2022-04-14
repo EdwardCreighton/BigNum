@@ -1,7 +1,7 @@
 # BigNum
 Custom implementation of Big Numbers class in C++
 
-__Work in progress__
+**__Work in progress__**
 
 ## Current Features:
   - BigNum Integer class
