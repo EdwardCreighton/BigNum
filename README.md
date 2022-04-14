@@ -1,9 +1,9 @@
 # BigNum
 Custom implementation of Big Numbers class in C++
 
-!!! Work in progress
+_Work in progress_**
 
-Current Features:
+## Current Features:
   - BigNum Integer class
   - Addition of two BigNum Int's
   - Subtracting of two BigNum Int's
